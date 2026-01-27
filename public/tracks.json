@@ -1,0 +1,141 @@
+{
+  "tracks": [
+    {
+      "id": "track_001",
+      "prompt": "dark phonk beat with heavy 808s and aggressive hi-hats",
+      "ai_model": "Suno",
+      "file_path": "/tracks/suno_darkphonk_001.mp3",
+      "duration": 45,
+      "elo": 1542,
+      "created_at": "2026-01-27",
+      "tags": ["phonk", "dark", "aggressive"]
+    },
+    {
+      "id": "track_002",
+      "prompt": "dark phonk beat with heavy 808s and aggressive hi-hats",
+      "ai_model": "Udio",
+      "file_path": "/tracks/udio_darkphonk_001.mp3",
+      "duration": 45,
+      "elo": 1489,
+      "created_at": "2026-01-27",
+      "tags": ["phonk", "dark", "aggressive"]
+    },
+    {
+      "id": "track_003",
+      "prompt": "chill lofi beats with vinyl crackle and soft piano",
+      "ai_model": "Suno",
+      "file_path": "/tracks/suno_lofi_001.mp3",
+      "duration": 50,
+      "elo": 1620,
+      "created_at": "2026-01-27",
+      "tags": ["lofi", "chill", "relaxing"]
+    },
+    {
+      "id": "track_004",
+      "prompt": "chill lofi beats with vinyl crackle and soft piano",
+      "ai_model": "Stable Audio",
+      "file_path": "/tracks/stable_lofi_001.mp3",
+      "duration": 48,
+      "elo": 1580,
+      "created_at": "2026-01-27",
+      "tags": ["lofi", "chill", "relaxing"]
+    },
+    {
+      "id": "track_005",
+      "prompt": "epic orchestral cinematic trailer music with brass and strings",
+      "ai_model": "Udio",
+      "file_path": "/tracks/udio_orchestral_001.mp3",
+      "duration": 60,
+      "elo": 1705,
+      "created_at": "2026-01-27",
+      "tags": ["orchestral", "epic", "cinematic"]
+    },
+    {
+      "id": "track_006",
+      "prompt": "epic orchestral cinematic trailer music with brass and strings",
+      "ai_model": "ElevenLabs Music",
+      "file_path": "/tracks/elevenlabs_orchestral_001.mp3",
+      "duration": 55,
+      "elo": 1650,
+      "created_at": "2026-01-27",
+      "tags": ["orchestral", "epic", "cinematic"]
+    },
+    {
+      "id": "track_007",
+      "prompt": "80s synthwave retro with pulsing bass and dreamy pads",
+      "ai_model": "Suno",
+      "file_path": "/tracks/suno_synthwave_001.mp3",
+      "duration": 52,
+      "elo": 1590,
+      "created_at": "2026-01-27",
+      "tags": ["synthwave", "retro", "80s"]
+    },
+    {
+      "id": "track_008",
+      "prompt": "80s synthwave retro with pulsing bass and dreamy pads",
+      "ai_model": "MusicGen",
+      "file_path": "/tracks/musicgen_synthwave_001.mp3",
+      "duration": 48,
+      "elo": 1555,
+      "created_at": "2026-01-27",
+      "tags": ["synthwave", "retro", "80s"]
+    },
+    {
+      "id": "track_009",
+      "prompt": "aggressive trap beat with rolling hi-hats and sub bass",
+      "ai_model": "Udio",
+      "file_path": "/tracks/udio_trap_001.mp3",
+      "duration": 42,
+      "elo": 1520,
+      "created_at": "2026-01-27",
+      "tags": ["trap", "aggressive", "hip-hop"]
+    },
+    {
+      "id": "track_010",
+      "prompt": "aggressive trap beat with rolling hi-hats and sub bass",
+      "ai_model": "Suno",
+      "file_path": "/tracks/suno_trap_001.mp3",
+      "duration": 45,
+      "elo": 1485,
+      "created_at": "2026-01-27",
+      "tags": ["trap", "aggressive", "hip-hop"]
+    }
+  ],
+  "ai_models": [
+    {
+      "id": "suno",
+      "name": "Suno",
+      "description": "Best for vocals and complex arrangements",
+      "elo": 1580,
+      "total_battles": 1247
+    },
+    {
+      "id": "udio",
+      "name": "Udio",
+      "description": "Excellent at instrumental and genre consistency",
+      "elo": 1560,
+      "total_battles": 1189
+    },
+    {
+      "id": "stable_audio",
+      "name": "Stable Audio",
+      "description": "High quality sound design and mixing",
+      "elo": 1540,
+      "total_battles": 983
+    },
+    {
+      "id": "elevenlabs_music",
+      "name": "ElevenLabs Music",
+      "description": "Great for cinematic and ambient music",
+      "elo": 1520,
+      "total_battles": 876
+    },
+    {
+      "id": "musicgen",
+      "name": "MusicGen",
+      "description": "Fast generation, good for simple tracks",
+      "elo": 1500,
+      "total_battles": 745
+    }
+  ]
+}

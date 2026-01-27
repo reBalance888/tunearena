@@ -1,35 +1,31 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Music2, Trophy, Flame, TrendingUp } from "lucide-react";
+import { Music2, Trophy, Flame, TrendingUp, RefreshCw } from "lucide-react";
 import AudioPlayer from "./AudioPlayer";
 import BetButton from "./BetButton";
 import WalletConnect from "./WalletConnect";
-
-const BATTLE_NUMBER = 247;
-const PROMPT = "dark phonk beat with heavy 808s";
-
-// Mock tracks - replace with real URLs or use from /public
-const TRACK_A = {
-  id: "track-a",
-  url: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3", // Placeholder
-  aiModel: "Suno",
-  elo: 1542,
-};
-
-const TRACK_B = {
-  id: "track-b",
-  url: "https://cdn.pixabay.com/download/audio/2022/03/10/audio_2948d6e39f.mp3", // Placeholder
-  aiModel: "Udio",
-  elo: 1489,
-};
+import { loadTracks, selectBattleTracks, Track } from "@/lib/trackService";
 
 export default function BattleArena() {
   const [countdown, setCountdown] = useState(60);
   const [isRevealed, setIsRevealed] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
+  const [trackA, setTrackA] = useState<Track | null>(null);
+  const [trackB, setTrackB] = useState<Track | null>(null);
+  const [battleNumber, setBattleNumber] = useState(247);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // Load tracks on mount
   useEffect(() => {
+    loadBattle();
+  }, []);
+
+  // Countdown timer
+  useEffect(() => {
+    if (!trackA || !trackB) return;
+
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -41,12 +37,69 @@ export default function BattleArena() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [trackA, trackB]);
+
+  const loadBattle = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await loadTracks();
+      const [track1, track2] = selectBattleTracks(data.tracks);
+      setTrackA(track1);
+      setTrackB(track2);
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Failed to load battle:", err);
+      setError("Failed to load battle. Please refresh.");
+      setIsLoading(false);
+    }
+  };
+
+  const handleNewBattle = () => {
+    setCountdown(60);
+    setIsRevealed(false);
+    setSelectedTrack(null);
+    setBattleNumber((prev) => prev + 1);
+    loadBattle();
+  };
 
   const handleBet = (trackId: string, amount: number) => {
     setSelectedTrack(trackId);
-    alert(`🎲 Coming Soon!\n\nYou tried to bet ${amount} $TUNE on ${trackId.toUpperCase()}\n\nWallet integration launching soon!`);
+    alert(
+      `🎲 Coming Soon!\n\nYou tried to bet ${amount} $TUNE on ${trackId.toUpperCase()}\n\nWallet integration launching soon!`
+    );
   };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <Music2 className="w-16 h-16 text-primary animate-pulse mx-auto mb-4" />
+            <p className="text-xl text-gray-400">Loading battle...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !trackA || !trackB) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <p className="text-xl text-red-400 mb-4">{error || "Failed to load tracks"}</p>
+            <button
+              onClick={handleNewBattle}
+              className="bg-primary hover:bg-primary/80 text-white font-bold py-3 px-6 rounded-lg"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -73,13 +126,15 @@ export default function BattleArena() {
             <Trophy className="w-8 h-8 text-primary" />
             <div>
               <p className="text-gray-400 text-sm">Battle</p>
-              <p className="text-2xl font-bold text-white">#{BATTLE_NUMBER}</p>
+              <p className="text-2xl font-bold text-white">#{battleNumber}</p>
             </div>
           </div>
 
           <div className="flex-1 text-center">
             <p className="text-gray-400 text-sm mb-2">Prompt</p>
-            <p className="text-xl font-semibold text-secondary">{PROMPT}</p>
+            <p className="text-xl font-semibold text-secondary line-clamp-2">
+              {trackA.prompt}
+            </p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -99,7 +154,7 @@ export default function BattleArena() {
         {/* Track A */}
         <div
           className={`bg-zinc-900/50 backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 ${
-            selectedTrack === TRACK_A.id
+            selectedTrack === trackA.id
               ? "border-primary glow-orange scale-105"
               : "border-primary/30 hover:border-primary/50"
           }`}
@@ -109,8 +164,8 @@ export default function BattleArena() {
             {isRevealed && (
               <div className="flex items-center gap-2 bg-primary/20 px-4 py-2 rounded-lg">
                 <TrendingUp className="w-5 h-5 text-primary" />
-                <span className="text-sm font-bold">{TRACK_A.aiModel}</span>
-                <span className="text-xs text-gray-400">ELO {TRACK_A.elo}</span>
+                <span className="text-sm font-bold">{trackA.ai_model}</span>
+                <span className="text-xs text-gray-400">ELO {trackA.elo}</span>
               </div>
             )}
             {!isRevealed && (
@@ -120,23 +175,23 @@ export default function BattleArena() {
             )}
           </div>
 
-          <AudioPlayer trackUrl={TRACK_A.url} trackId={TRACK_A.id} />
+          <AudioPlayer trackUrl={trackA.file_path} trackId={trackA.id} />
 
           <div className="mt-6 space-y-3">
             <BetButton
-              trackId={TRACK_A.id}
+              trackId={trackA.id}
               amount={10}
               onBet={handleBet}
               disabled={isRevealed}
             />
             <BetButton
-              trackId={TRACK_A.id}
+              trackId={trackA.id}
               amount={50}
               onBet={handleBet}
               disabled={isRevealed}
             />
             <BetButton
-              trackId={TRACK_A.id}
+              trackId={trackA.id}
               amount={100}
               onBet={handleBet}
               disabled={isRevealed}
@@ -147,7 +202,7 @@ export default function BattleArena() {
         {/* Track B */}
         <div
           className={`bg-zinc-900/50 backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 ${
-            selectedTrack === TRACK_B.id
+            selectedTrack === trackB.id
               ? "border-secondary glow-cyan scale-105"
               : "border-secondary/30 hover:border-secondary/50"
           }`}
@@ -157,8 +212,8 @@ export default function BattleArena() {
             {isRevealed && (
               <div className="flex items-center gap-2 bg-secondary/20 px-4 py-2 rounded-lg">
                 <TrendingUp className="w-5 h-5 text-secondary" />
-                <span className="text-sm font-bold">{TRACK_B.aiModel}</span>
-                <span className="text-xs text-gray-400">ELO {TRACK_B.elo}</span>
+                <span className="text-sm font-bold">{trackB.ai_model}</span>
+                <span className="text-xs text-gray-400">ELO {trackB.elo}</span>
               </div>
             )}
             {!isRevealed && (
@@ -168,25 +223,25 @@ export default function BattleArena() {
             )}
           </div>
 
-          <AudioPlayer trackUrl={TRACK_B.url} trackId={TRACK_B.id} />
+          <AudioPlayer trackUrl={trackB.file_path} trackId={trackB.id} />
 
           <div className="mt-6 space-y-3">
             <BetButton
-              trackId={TRACK_B.id}
+              trackId={trackB.id}
               amount={10}
               onBet={handleBet}
               disabled={isRevealed}
               variant="secondary"
             />
             <BetButton
-              trackId={TRACK_B.id}
+              trackId={trackB.id}
               amount={50}
               onBet={handleBet}
               disabled={isRevealed}
               variant="secondary"
             />
             <BetButton
-              trackId={TRACK_B.id}
+              trackId={trackB.id}
               amount={100}
               onBet={handleBet}
               disabled={isRevealed}
@@ -195,6 +250,19 @@ export default function BattleArena() {
           </div>
         </div>
       </div>
+
+      {/* New Battle Button */}
+      {isRevealed && (
+        <div className="flex justify-center mb-8">
+          <button
+            onClick={handleNewBattle}
+            className="bg-gradient-to-r from-accent to-primary hover:from-accent/80 hover:to-primary/80 text-white font-bold py-4 px-8 rounded-xl flex items-center gap-3 transition-all duration-300 hover:scale-105 glow-purple"
+          >
+            <RefreshCw className="w-6 h-6" />
+            <span className="text-lg">New Battle</span>
+          </button>
+        </div>
+      )}
 
       {/* Stats Footer */}
       <div className="bg-zinc-900/50 backdrop-blur-sm border border-accent/30 rounded-2xl p-6">
@@ -220,9 +288,7 @@ export default function BattleArena() {
 
       {/* Footer */}
       <footer className="mt-12 text-center text-gray-500 text-sm">
-        <p>
-          Powered by Solana · $TUNE on pump.fun · Built with AI
-        </p>
+        <p>Powered by Solana · $TUNE on pump.fun · Built with AI</p>
       </footer>
     </div>
   );
