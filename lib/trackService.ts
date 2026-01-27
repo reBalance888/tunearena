@@ -44,7 +44,8 @@ export async function loadTracks(): Promise<TracksData> {
 }
 
 /**
- * Select two random tracks with different AI models
+ * Select two random different tracks for battle
+ * Tries to pick tracks from different AI models when possible
  */
 export function selectBattleTracks(tracks: Track[]): [Track, Track] {
   if (tracks.length < 2) {
@@ -63,9 +64,18 @@ export function selectBattleTracks(tracks: Track[]): [Track, Track] {
   const models = Object.keys(modelGroups);
 
   if (models.length < 2) {
-    // If only one model, just pick two random tracks
+    // If only one model (e.g., all Suno tracks), pick two random different tracks
     const shuffled = [...tracks].sort(() => Math.random() - 0.5);
-    return [shuffled[0], shuffled[1]];
+    // Make sure they're different tracks
+    let track1 = shuffled[0];
+    let track2 = shuffled[1];
+
+    // Ensure tracks are different
+    if (track1.id === track2.id && shuffled.length > 2) {
+      track2 = shuffled[2];
+    }
+
+    return [track1, track2];
   }
 
   // Pick two different models randomly

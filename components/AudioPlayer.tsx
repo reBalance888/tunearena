@@ -6,9 +6,10 @@ import { Play, Pause, Volume2, VolumeX } from "lucide-react";
 interface AudioPlayerProps {
   trackUrl: string;
   trackId: string;
+  onPlay?: () => void;
 }
 
-export default function AudioPlayer({ trackUrl, trackId }: AudioPlayerProps) {
+export default function AudioPlayer({ trackUrl, trackId, onPlay }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -40,6 +41,10 @@ export default function AudioPlayer({ trackUrl, trackId }: AudioPlayerProps) {
       audioRef.current.pause();
     } else {
       audioRef.current.play();
+      // Notify parent component that playback started
+      if (onPlay) {
+        onPlay();
+      }
     }
     setIsPlaying(!isPlaying);
   };
@@ -64,11 +69,11 @@ export default function AudioPlayer({ trackUrl, trackId }: AudioPlayerProps) {
   };
 
   return (
-    <div className="bg-black/50 rounded-xl p-6 border border-white/10">
+    <div className="bg-black/50 rounded-xl p-4 md:p-6 border border-white/10">
       <audio ref={audioRef} src={trackUrl} preload="metadata" />
 
       {/* Waveform Visualization (Fake) */}
-      <div className="flex items-center justify-center h-24 mb-4 bg-zinc-900/50 rounded-lg overflow-hidden">
+      <div className="flex items-center justify-center h-16 md:h-24 mb-3 md:mb-4 bg-zinc-900/50 rounded-lg overflow-hidden">
         <div className="flex items-end gap-1 h-full px-4">
           {Array.from({ length: 50 }).map((_, i) => (
             <div
@@ -89,19 +94,19 @@ export default function AudioPlayer({ trackUrl, trackId }: AudioPlayerProps) {
       </div>
 
       {/* Controls */}
-      <div className="flex items-center gap-4 mb-3">
+      <div className="flex items-center gap-3 md:gap-4 mb-3">
         <button
           onClick={togglePlay}
-          className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
+          className={`w-14 h-14 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
             trackId === "track-a"
               ? "bg-primary hover:bg-primary/80 glow-orange"
               : "bg-secondary hover:bg-secondary/80 glow-cyan"
           }`}
         >
           {isPlaying ? (
-            <Pause className="w-6 h-6 text-white" />
+            <Pause className="w-7 h-7 md:w-6 md:h-6 text-white" />
           ) : (
-            <Play className="w-6 h-6 text-white ml-0.5" />
+            <Play className="w-7 h-7 md:w-6 md:h-6 text-white ml-0.5" />
           )}
         </button>
 
@@ -131,12 +136,12 @@ export default function AudioPlayer({ trackUrl, trackId }: AudioPlayerProps) {
 
         <button
           onClick={toggleMute}
-          className="w-10 h-10 rounded-lg bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center transition-colors"
+          className="w-12 h-12 md:w-10 md:h-10 rounded-lg bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center transition-colors"
         >
           {isMuted ? (
-            <VolumeX className="w-5 h-5 text-gray-400" />
+            <VolumeX className="w-6 h-6 md:w-5 md:h-5 text-gray-400" />
           ) : (
-            <Volume2 className="w-5 h-5 text-white" />
+            <Volume2 className="w-6 h-6 md:w-5 md:h-5 text-white" />
           )}
         </button>
       </div>

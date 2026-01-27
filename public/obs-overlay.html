@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <title>Tune Arena - OBS Overlay</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 1920px;
+      height: 1080px;
+      background: transparent;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: white;
+      overflow: hidden;
+    }
+
+    /* Battle Info Bar - Top */
+    .battle-info {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 107, 53, 0.5);
+      border-radius: 20px;
+      padding: 15px 40px;
+      box-shadow: 0 0 30px rgba(255, 107, 53, 0.3);
+      z-index: 100;
+    }
+
+    .battle-number {
+      text-align: center;
+      font-size: 18px;
+      color: #999;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .battle-prompt {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #FF6B35, #00D9FF, #B24BF3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      max-width: 800px;
+      text-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+    }
+
+    /* Countdown Timer */
+    .countdown {
+      position: absolute;
+      top: 140px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.9);
+      border: 3px solid #B24BF3;
+      border-radius: 15px;
+      padding: 20px 50px;
+      z-index: 100;
+      box-shadow: 0 0 40px rgba(178, 75, 243, 0.5);
+    }
+
+    .countdown-label {
+      text-align: center;
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+    }
+
+    .countdown-time {
+      text-align: center;
+      font-size: 64px;
+      font-weight: 900;
+      color: #B24BF3;
+      font-feature-settings: 'tnum';
+      text-shadow: 0 0 20px rgba(178, 75, 243, 0.8);
+    }
+
+    /* Track Cards */
+    .tracks-container {
+      position: absolute;
+      bottom: 80px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 60px;
+      gap: 40px;
+      z-index: 50;
+    }
+
+    .track-card {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 25px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .track-card.track-a {
+      border: 2px solid rgba(255, 107, 53, 0.6);
+      box-shadow: 0 0 30px rgba(255, 107, 53, 0.3);
+    }
+
+    .track-card.track-b {
+      border: 2px solid rgba(0, 217, 255, 0.6);
+      box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);
+    }
+
+    .track-label {
+      font-size: 32px;
+      font-weight: 900;
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px currentColor;
+    }
+
+    .track-card.track-a .track-label {
+      color: #FF6B35;
+    }
+
+    .track-card.track-b .track-label {
+      color: #00D9FF;
+    }
+
+    .track-ai {
+      font-size: 24px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .track-ai.revealed {
+      color: white;
+      font-weight: bold;
+    }
+
+    .track-bets {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bet-amount {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 10px 15px;
+      font-size: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .bet-label {
+      color: #999;
+    }
+
+    .bet-value {
+      font-weight: bold;
+      font-size: 22px;
+    }
+
+    /* Betting Activity Feed */
+    .activity-feed {
+      position: absolute;
+      top: 250px;
+      right: 30px;
+      width: 350px;
+      max-height: 600px;
+      overflow: hidden;
+      z-index: 90;
+    }
+
+    .activity-item {
+      background: rgba(0, 0, 0, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      animation: slideInRight 0.5s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .activity-user {
+      color: #B24BF3;
+      font-weight: bold;
+    }
+
+    .activity-amount {
+      color: #00D9FF;
+      font-weight: bold;
+    }
+
+    /* Winner Reveal Animation */
+    .winner-reveal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: rgba(0, 0, 0, 0.95);
+      border: 4px solid #FFD700;
+      border-radius: 30px;
+      padding: 60px 100px;
+      text-align: center;
+      z-index: 200;
+      box-shadow: 0 0 100px rgba(255, 215, 0, 0.7);
+      animation: revealPop 0.5s ease forwards;
+      display: none;
+    }
+
+    .winner-reveal.show {
+      display: block;
+    }
+
+    @keyframes revealPop {
+      to {
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    .winner-title {
+      font-size: 48px;
+      font-weight: 900;
+      color: #FFD700;
+      margin-bottom: 20px;
+      text-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    }
+
+    .winner-name {
+      font-size: 72px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #FF6B35, #00D9FF, #B24BF3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+    }
+
+    .elo-change {
+      font-size: 36px;
+      font-weight: bold;
+      color: #00FF00;
+    }
+
+    /* Stats Bar - Bottom Left */
+    .stats-bar {
+      position: absolute;
+      bottom: 20px;
+      left: 30px;
+      display: flex;
+      gap: 20px;
+      z-index: 100;
+    }
+
+    .stat-item {
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 10px 20px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #FF6B35, #B24BF3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Animations */
+    @keyframes glow {
+      0%, 100% {
+        box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+      }
+      50% {
+        box-shadow: 0 0 40px rgba(255, 107, 53, 0.6);
+      }
+    }
+
+    .pulse {
+      animation: glow 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+  <!-- Battle Info -->
+  <div class="battle-info pulse">
+    <div class="battle-number">Battle #<span id="battleNumber">247</span></div>
+    <div class="battle-prompt" id="battlePrompt">Dark Phonk Beat with Heavy Bass</div>
+  </div>
+
+  <!-- Countdown Timer -->
+  <div class="countdown">
+    <div class="countdown-label">Time Remaining</div>
+    <div class="countdown-time" id="countdownTime">0:60</div>
+  </div>
+
+  <!-- Track Cards -->
+  <div class="tracks-container">
+    <!-- Track A -->
+    <div class="track-card track-a">
+      <div class="track-label">TRACK A</div>
+      <div class="track-ai" id="trackAName">??? AI</div>
+      <div class="track-bets">
+        <div class="bet-amount">
+          <span class="bet-label">Total Bets:</span>
+          <span class="bet-value" id="trackABets">0 $TUNE</span>
+        </div>
+        <div class="bet-amount">
+          <span class="bet-label">Bettors:</span>
+          <span class="bet-value" id="trackABettors">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Track B -->
+    <div class="track-card track-b">
+      <div class="track-label">TRACK B</div>
+      <div class="track-ai" id="trackBName">??? AI</div>
+      <div class="track-bets">
+        <div class="bet-amount">
+          <span class="bet-label">Total Bets:</span>
+          <span class="bet-value" id="trackBBets">0 $TUNE</span>
+        </div>
+        <div class="bet-amount">
+          <span class="bet-label">Bettors:</span>
+          <span class="bet-value" id="trackBBettors">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity Feed -->
+  <div class="activity-feed" id="activityFeed">
+    <!-- Dynamic content via WebSocket -->
+  </div>
+
+  <!-- Winner Reveal (hidden by default) -->
+  <div class="winner-reveal" id="winnerReveal">
+    <div class="winner-title">🏆 WINNER 🏆</div>
+    <div class="winner-name" id="winnerName">Suno</div>
+    <div class="elo-change" id="eloChange">+15 ELO</div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-label">Total Battles</div>
+      <div class="stat-value" id="totalBattles">24.7K</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Live Viewers</div>
+      <div class="stat-value" id="liveViewers">1,234</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Prize Pool</div>
+      <div class="stat-value" id="prizePool">$890K</div>
+    </div>
+  </div>
+
+  <script>
+    // WebSocket connection for real-time updates
+    // Replace with your actual WebSocket server URL
+    const WS_URL = 'ws://localhost:3001';
+    let ws;
+
+    function connect() {
+      ws = new WebSocket(WS_URL);
+
+      ws.onopen = () => {
+        console.log('Connected to battle bot');
+      };
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        handleUpdate(data);
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      ws.onclose = () => {
+        console.log('Disconnected, retrying in 5s...');
+        setTimeout(connect, 5000);
+      };
+    }
+
+    // Handle real-time updates
+    function handleUpdate(data) {
+      switch (data.type) {
+        case 'battle_start':
+          updateBattleInfo(data);
+          break;
+        case 'countdown':
+          updateCountdown(data.time);
+          break;
+        case 'bet_placed':
+          addActivityItem(data);
+          updateBetTotals(data);
+          break;
+        case 'reveal':
+          showWinner(data);
+          break;
+        case 'stats':
+          updateStats(data);
+          break;
+      }
+    }
+
+    function updateBattleInfo(data) {
+      document.getElementById('battleNumber').textContent = data.battleNumber;
+      document.getElementById('battlePrompt').textContent = data.prompt;
+      document.getElementById('trackAName').textContent = '??? AI';
+      document.getElementById('trackBName').textContent = '??? AI';
+    }
+
+    function updateCountdown(time) {
+      const minutes = Math.floor(time / 60);
+      const seconds = time % 60;
+      document.getElementById('countdownTime').textContent =
+        `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function addActivityItem(data) {
+      const feed = document.getElementById('activityFeed');
+      const item = document.createElement('div');
+      item.className = 'activity-item';
+      item.innerHTML = `
+        <span class="activity-user">${formatAddress(data.wallet)}</span>
+        bet
+        <span class="activity-amount">${data.amount} $TUNE</span>
+        on ${data.track}
+      `;
+
+      feed.insertBefore(item, feed.firstChild);
+
+      // Remove old items (keep last 8)
+      while (feed.children.length > 8) {
+        feed.removeChild(feed.lastChild);
+      }
+    }
+
+    function updateBetTotals(data) {
+      if (data.track === 'Track A') {
+        document.getElementById('trackABets').textContent = `${data.totalA} $TUNE`;
+        document.getElementById('trackABettors').textContent = data.bettorsA;
+      } else {
+        document.getElementById('trackBBets').textContent = `${data.totalB} $TUNE`;
+        document.getElementById('trackBBettors').textContent = data.bettorsB;
+      }
+    }
+
+    function showWinner(data) {
+      // Reveal AI names
+      document.getElementById('trackAName').textContent = data.trackAName;
+      document.getElementById('trackAName').classList.add('revealed');
+      document.getElementById('trackBName').textContent = data.trackBName;
+      document.getElementById('trackBName').classList.add('revealed');
+
+      // Show winner popup
+      document.getElementById('winnerName').textContent = data.winner;
+      document.getElementById('eloChange').textContent = `+${data.eloGain} ELO`;
+      document.getElementById('winnerReveal').classList.add('show');
+
+      // Hide after 5 seconds
+      setTimeout(() => {
+        document.getElementById('winnerReveal').classList.remove('show');
+      }, 5000);
+    }
+
+    function updateStats(data) {
+      document.getElementById('totalBattles').textContent = data.totalBattles;
+      document.getElementById('liveViewers').textContent = data.liveViewers;
+      document.getElementById('prizePool').textContent = data.prizePool;
+    }
+
+    function formatAddress(address) {
+      return `${address.slice(0, 4)}...${address.slice(-4)}`;
+    }
+
+    // Auto-connect on load
+    // connect();
+
+    // Demo mode (comment out when using real WebSocket)
+    // simulateDemo();
+
+    function simulateDemo() {
+      // Demo battle start
+      setTimeout(() => {
+        handleUpdate({
+          type: 'battle_start',
+          battleNumber: 248,
+          prompt: 'Epic Orchestral Soundtrack with Choir'
+        });
+      }, 1000);
+
+      // Demo countdown
+      let time = 60;
+      setInterval(() => {
+        if (time > 0) {
+          handleUpdate({ type: 'countdown', time: time-- });
+        }
+      }, 1000);
+
+      // Demo bets
+      const wallets = ['ABC1...XYZ9', 'DEF2...UVW8', 'GHI3...RST7'];
+      setInterval(() => {
+        handleUpdate({
+          type: 'bet_placed',
+          wallet: wallets[Math.floor(Math.random() * wallets.length)],
+          amount: Math.floor(Math.random() * 100) + 10,
+          track: Math.random() > 0.5 ? 'Track A' : 'Track B',
+          totalA: Math.floor(Math.random() * 500) + 100,
+          totalB: Math.floor(Math.random() * 500) + 100,
+          bettorsA: Math.floor(Math.random() * 20) + 5,
+          bettorsB: Math.floor(Math.random() * 20) + 5,
+        });
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

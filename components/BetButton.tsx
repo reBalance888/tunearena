@@ -24,9 +24,10 @@ export default function BetButton({
       onClick={() => onBet(trackId, amount)}
       disabled={disabled}
       className={`
-        w-full py-3 px-6 rounded-lg font-bold text-lg
-        flex items-center justify-center gap-3
+        w-full py-4 md:py-3 px-6 rounded-lg font-bold text-base md:text-lg
+        flex items-center justify-center gap-2 md:gap-3
         transition-all duration-300
+        min-h-[56px] md:min-h-0
         ${
           disabled
             ? "bg-zinc-800 text-gray-600 cursor-not-allowed"
@@ -37,11 +38,11 @@ export default function BetButton({
         ${!disabled && "hover:shadow-2xl"}
       `}
     >
-      <Coins className="w-6 h-6" />
+      <Coins className="w-5 h-5 md:w-6 md:h-6" />
       <span>
-        BET {amount} <span className="text-sm opacity-80">$TUNE</span>
+        BET {amount} <span className="text-xs md:text-sm opacity-80">$TUNE</span>
       </span>
-      {!disabled && <Zap className="w-5 h-5 animate-pulse" />}
+      {!disabled && <Zap className="w-4 h-4 md:w-5 md:h-5 animate-pulse" />}
     </button>
   );
 }

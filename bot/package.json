@@ -1,0 +1,25 @@
+{
+  "name": "tune-arena-battle-bot",
+  "version": "1.0.0",
+  "description": "Automated 24/7 battle bot for Tune Arena",
+  "main": "battle-bot.js",
+  "scripts": {
+    "start": "node battle-bot.js",
+    "dev": "nodemon battle-bot.js",
+    "logs": "tail -f battle-bot.log"
+  },
+  "keywords": [
+    "solana",
+    "ai",
+    "music",
+    "websocket"
+  ],
+  "author": "Tune Arena",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

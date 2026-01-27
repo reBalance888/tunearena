@@ -1,141 +1,133 @@
 {
   "tracks": [
     {
-      "id": "track_001",
-      "prompt": "dark phonk beat with heavy 808s and aggressive hi-hats",
+      "id": "suno_track_001",
+      "prompt": "dark phonk beat with heavy bass",
       "ai_model": "Suno",
-      "file_path": "/tracks/suno_darkphonk_001.mp3",
-      "duration": 45,
+      "file_path": "/tracks/1.mp3",
+      "duration": 30,
       "elo": 1542,
-      "created_at": "2026-01-27",
-      "tags": ["phonk", "dark", "aggressive"]
+      "created_at": "2025-01-27",
+      "tags": ["phonk", "dark", "bass"]
     },
     {
-      "id": "track_002",
-      "prompt": "dark phonk beat with heavy 808s and aggressive hi-hats",
-      "ai_model": "Udio",
-      "file_path": "/tracks/udio_darkphonk_001.mp3",
-      "duration": 45,
-      "elo": 1489,
-      "created_at": "2026-01-27",
-      "tags": ["phonk", "dark", "aggressive"]
-    },
-    {
-      "id": "track_003",
-      "prompt": "chill lofi beats with vinyl crackle and soft piano",
+      "id": "suno_track_002",
+      "prompt": "dark phonk beat with aggressive drums",
       "ai_model": "Suno",
-      "file_path": "/tracks/suno_lofi_001.mp3",
-      "duration": 50,
-      "elo": 1620,
-      "created_at": "2026-01-27",
-      "tags": ["lofi", "chill", "relaxing"]
+      "file_path": "/tracks/2.mp3",
+      "duration": 30,
+      "elo": 1538,
+      "created_at": "2025-01-27",
+      "tags": ["phonk", "dark", "drums"]
     },
     {
-      "id": "track_004",
-      "prompt": "chill lofi beats with vinyl crackle and soft piano",
-      "ai_model": "Stable Audio",
-      "file_path": "/tracks/stable_lofi_001.mp3",
-      "duration": 48,
-      "elo": 1580,
-      "created_at": "2026-01-27",
-      "tags": ["lofi", "chill", "relaxing"]
-    },
-    {
-      "id": "track_005",
-      "prompt": "epic orchestral cinematic trailer music with brass and strings",
-      "ai_model": "Udio",
-      "file_path": "/tracks/udio_orchestral_001.mp3",
-      "duration": 60,
-      "elo": 1705,
-      "created_at": "2026-01-27",
-      "tags": ["orchestral", "epic", "cinematic"]
-    },
-    {
-      "id": "track_006",
-      "prompt": "epic orchestral cinematic trailer music with brass and strings",
-      "ai_model": "ElevenLabs Music",
-      "file_path": "/tracks/elevenlabs_orchestral_001.mp3",
-      "duration": 55,
-      "elo": 1650,
-      "created_at": "2026-01-27",
-      "tags": ["orchestral", "epic", "cinematic"]
-    },
-    {
-      "id": "track_007",
-      "prompt": "80s synthwave retro with pulsing bass and dreamy pads",
+      "id": "suno_track_003",
+      "prompt": "dark phonk beat with distorted 808s",
       "ai_model": "Suno",
-      "file_path": "/tracks/suno_synthwave_001.mp3",
-      "duration": 52,
-      "elo": 1590,
-      "created_at": "2026-01-27",
-      "tags": ["synthwave", "retro", "80s"]
+      "file_path": "/tracks/3.mp3",
+      "duration": 30,
+      "elo": 1529,
+      "created_at": "2025-01-27",
+      "tags": ["phonk", "dark", "808"]
     },
     {
-      "id": "track_008",
-      "prompt": "80s synthwave retro with pulsing bass and dreamy pads",
-      "ai_model": "MusicGen",
-      "file_path": "/tracks/musicgen_synthwave_001.mp3",
-      "duration": 48,
-      "elo": 1555,
-      "created_at": "2026-01-27",
-      "tags": ["synthwave", "retro", "80s"]
-    },
-    {
-      "id": "track_009",
-      "prompt": "aggressive trap beat with rolling hi-hats and sub bass",
-      "ai_model": "Udio",
-      "file_path": "/tracks/udio_trap_001.mp3",
-      "duration": 42,
-      "elo": 1520,
-      "created_at": "2026-01-27",
-      "tags": ["trap", "aggressive", "hip-hop"]
-    },
-    {
-      "id": "track_010",
-      "prompt": "aggressive trap beat with rolling hi-hats and sub bass",
+      "id": "suno_track_004",
+      "prompt": "dark phonk beat with memphis samples",
       "ai_model": "Suno",
-      "file_path": "/tracks/suno_trap_001.mp3",
-      "duration": 45,
+      "file_path": "/tracks/4.mp3",
+      "duration": 30,
+      "elo": 1515,
+      "created_at": "2025-01-27",
+      "tags": ["phonk", "dark", "memphis"]
+    },
+    {
+      "id": "suno_track_005",
+      "prompt": "dark phonk beat with trap influences",
+      "ai_model": "Suno",
+      "file_path": "/tracks/5.mp3",
+      "duration": 30,
+      "elo": 1507,
+      "created_at": "2025-01-27",
+      "tags": ["phonk", "dark", "trap"]
+    },
+    {
+      "id": "suno_track_006",
+      "prompt": "dark phonk beat with cowbell rhythm",
+      "ai_model": "Suno",
+      "file_path": "/tracks/6.mp3",
+      "duration": 30,
+      "elo": 1498,
+      "created_at": "2025-01-27",
+      "tags": ["phonk", "dark", "cowbell"]
+    },
+    {
+      "id": "suno_track_007",
+      "prompt": "dark phonk beat with hard kicks",
+      "ai_model": "Suno",
+      "file_path": "/tracks/7.mp3",
+      "duration": 30,
       "elo": 1485,
-      "created_at": "2026-01-27",
-      "tags": ["trap", "aggressive", "hip-hop"]
+      "created_at": "2025-01-27",
+      "tags": ["phonk", "dark", "kicks"]
+    },
+    {
+      "id": "suno_track_008",
+      "prompt": "dark phonk beat with eerie melody",
+      "ai_model": "Suno",
+      "file_path": "/tracks/8.mp3",
+      "duration": 30,
+      "elo": 1473,
+      "created_at": "2025-01-27",
+      "tags": ["phonk", "dark", "eerie"]
+    },
+    {
+      "id": "suno_track_009",
+      "prompt": "dark phonk beat with rolling hi-hats",
+      "ai_model": "Suno",
+      "file_path": "/tracks/9.mp3",
+      "duration": 30,
+      "elo": 1467,
+      "created_at": "2025-01-27",
+      "tags": ["phonk", "dark", "hihats"]
+    },
+    {
+      "id": "suno_track_010",
+      "prompt": "dark phonk beat with chopped vocals",
+      "ai_model": "Suno",
+      "file_path": "/tracks/10.mp3",
+      "duration": 30,
+      "elo": 1459,
+      "created_at": "2025-01-27",
+      "tags": ["phonk", "dark", "vocals"]
+    },
+    {
+      "id": "suno_track_011",
+      "prompt": "dark phonk beat with sub bass",
+      "ai_model": "Suno",
+      "file_path": "/tracks/11.mp3",
+      "duration": 30,
+      "elo": 1451,
+      "created_at": "2025-01-27",
+      "tags": ["phonk", "dark", "subbass"]
+    },
+    {
+      "id": "suno_track_012",
+      "prompt": "dark phonk beat with dark atmosphere",
+      "ai_model": "Suno",
+      "file_path": "/tracks/12.mp3",
+      "duration": 30,
+      "elo": 1447,
+      "created_at": "2025-01-27",
+      "tags": ["phonk", "dark", "atmospheric"]
     }
   ],
   "ai_models": [
     {
       "id": "suno",
       "name": "Suno",
-      "description": "Best for vocals and complex arrangements",
-      "elo": 1580,
-      "total_battles": 1247
-    },
-    {
-      "id": "udio",
-      "name": "Udio",
-      "description": "Excellent at instrumental and genre consistency",
-      "elo": 1560,
-      "total_battles": 1189
-    },
-    {
-      "id": "stable_audio",
-      "name": "Stable Audio",
-      "description": "High quality sound design and mixing",
-      "elo": 1540,
-      "total_battles": 983
-    },
-    {
-      "id": "elevenlabs_music",
-      "name": "ElevenLabs Music",
-      "description": "Great for cinematic and ambient music",
-      "elo": 1520,
-      "total_battles": 876
-    },
-    {
-      "id": "musicgen",
-      "name": "MusicGen",
-      "description": "Fast generation, good for simple tracks",
+      "description": "AI music generation with vocals and complex arrangements",
       "elo": 1500,
-      "total_battles": 745
+      "total_battles": 1247
     }
   ]
 }

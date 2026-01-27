@@ -1,0 +1,99 @@
+// Prisma schema for Tune Arena
+// Database: PostgreSQL (Supabase)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// AI Models competing in battles
+model AIModel {
+  id            String   @id @default(uuid())
+  name          String   @unique
+  elo           Int      @default(1500)
+  totalBattles  Int      @default(0)
+  wins          Int      @default(0)
+  losses        Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  battlesAsTrackA Battle[] @relation("TrackA")
+  battlesAsTrackB Battle[] @relation("TrackB")
+  battlesAsWinner Battle[] @relation("Winner")
+
+  @@map("ai_models")
+}
+
+// Individual battles between two AI models
+model Battle {
+  id            String    @id @default(uuid())
+  battleNumber  Int       @unique @default(autoincrement())
+  prompt        String
+
+  // Track information
+  trackAId      String
+  trackAUrl     String?
+  trackA        AIModel   @relation("TrackA", fields: [trackAId], references: [id])
+
+  trackBId      String
+  trackBUrl     String?
+  trackB        AIModel   @relation("TrackB", fields: [trackBId], references: [id])
+
+  // Battle state
+  isRevealed    Boolean   @default(false)
+  winnerId      String?
+  winner        AIModel?  @relation("Winner", fields: [winnerId], references: [id])
+
+  // Timestamps
+  startedAt     DateTime  @default(now())
+  revealedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  votes         Vote[]
+
+  @@map("battles")
+  @@index([battleNumber])
+  @@index([isRevealed])
+  @@index([startedAt])
+}
+
+// User votes/bets on battles
+model Vote {
+  id            String   @id @default(uuid())
+  battleId      String
+  battle        Battle   @relation(fields: [battleId], references: [id], onDelete: Cascade)
+
+  userWallet    String
+  choice        String   // "trackA" or "trackB"
+  betAmount     Int      // Amount in $TUNE (smallest unit)
+
+  // Result (calculated after reveal)
+  won           Boolean?
+  payout        Int?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("votes")
+  @@unique([battleId, userWallet])
+  @@index([userWallet])
+  @@index([battleId])
+}
+
+// Global platform statistics
+model GlobalStats {
+  id            String   @id @default("singleton")
+  totalBattles  Int      @default(0)
+  tuneBurned    BigInt   @default(0)
+  totalVolume   BigInt   @default(0)
+  updatedAt     DateTime @updatedAt
+
+  @@map("global_stats")
+}
