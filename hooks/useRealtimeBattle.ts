@@ -32,13 +32,14 @@ export function useRealtimeBattle() {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
+    if (!supabase) return;
+
     let battlesChannel: RealtimeChannel;
     let votesChannel: RealtimeChannel;
 
     async function setupRealtimeSubscriptions() {
       try {
-        // Fetch current active battle
-        const { data: battles, error } = await supabase
+        const { data: battles, error } = await supabase!
           .from('battles')
           .select('*')
           .eq('isRevealed', false)
@@ -50,8 +51,7 @@ export function useRealtimeBattle() {
           setCurrentBattle(battles[0]);
         }
 
-        // Subscribe to battles table
-        battlesChannel = supabase
+        battlesChannel = supabase!
           .channel('realtime:battles')
           .on(
             'postgres_changes',
@@ -61,8 +61,6 @@ export function useRealtimeBattle() {
               table: 'battles',
             },
             (payload) => {
-              console.log('Battle update:', payload);
-
               if (payload.eventType === 'INSERT') {
                 setCurrentBattle(payload.new as RealtimeBattle);
               } else if (payload.eventType === 'UPDATE') {
@@ -71,12 +69,10 @@ export function useRealtimeBattle() {
             }
           )
           .subscribe((status) => {
-            console.log('Battles subscription status:', status);
             setIsConnected(status === 'SUBSCRIBED');
           });
 
-        // Subscribe to votes table
-        votesChannel = supabase
+        votesChannel = supabase!
           .channel('realtime:votes')
           .on(
             'postgres_changes',
@@ -86,17 +82,11 @@ export function useRealtimeBattle() {
               table: 'votes',
             },
             (payload) => {
-              console.log('New vote:', payload);
-
               const newVote = payload.new as RealtimeVote;
-
-              // Add to recent votes (keep last 10)
               setRecentVotes((prev) => [newVote, ...prev].slice(0, 10));
             }
           )
-          .subscribe((status) => {
-            console.log('Votes subscription status:', status);
-          });
+          .subscribe();
       } catch (error) {
         console.error('Failed to setup real-time subscriptions:', error);
       }
@@ -104,7 +94,6 @@ export function useRealtimeBattle() {
 
     setupRealtimeSubscriptions();
 
-    // Cleanup
     return () => {
       battlesChannel?.unsubscribe();
       votesChannel?.unsubscribe();
