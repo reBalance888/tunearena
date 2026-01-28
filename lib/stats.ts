@@ -21,12 +21,10 @@ export function getGlobalStats(): GlobalStats {
     };
   }
 
+  const defaults = { totalBattles: 24700, totalVotes: 89400 };
   const stored = localStorage.getItem(STATS_KEY);
 
-  return stored ? JSON.parse(stored) : {
-    totalBattles: 24700,
-    totalVotes: 89400,
-  };
+  return stored ? { ...defaults, ...JSON.parse(stored) } : defaults;
 }
 
 /**
