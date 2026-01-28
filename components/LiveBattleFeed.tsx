@@ -2,7 +2,6 @@
 
 import { useRealtimeBattle } from "@/hooks/useRealtimeBattle";
 import { Activity, Users, Flame } from "lucide-react";
-import { formatAddress } from "@/lib/walletBalance";
 
 export default function LiveBattleFeed() {
   const { currentBattle, recentVotes, isConnected } = useRealtimeBattle();
@@ -44,7 +43,7 @@ export default function LiveBattleFeed() {
           <div className="flex items-center gap-2 mt-3">
             <Users className="w-4 h-4 text-accent" />
             <span className="text-xs text-gray-400">
-              {recentVotes.length} recent bets
+              {recentVotes.length} recent votes
             </span>
           </div>
         </div>
@@ -53,14 +52,14 @@ export default function LiveBattleFeed() {
       {/* Recent Votes Feed */}
       <div className="space-y-2">
         <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">
-          Recent Bets
+          Recent Votes
         </h3>
 
         {recentVotes.length === 0 ? (
           <div className="text-center py-8">
             <Activity className="w-12 h-12 text-gray-600 mx-auto mb-3" />
             <p className="text-gray-500 text-sm">
-              Waiting for bets...
+              Waiting for votes...
             </p>
           </div>
         ) : (
@@ -72,21 +71,18 @@ export default function LiveBattleFeed() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 min-w-0">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-xs font-bold flex-shrink-0">
-                    {vote.userWallet.slice(0, 2).toUpperCase()}
+                    {String(vote.id).slice(-2).toUpperCase()}
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-white truncate">
-                      {formatAddress(vote.userWallet)}
+                      Player
                     </p>
                     <p className="text-xs text-gray-400">
-                      {vote.choice === "trackA" ? "Track A" : "Track B"}
+                      voted {vote.choice === "trackA" ? "Track A" : "Track B"}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-bold text-accent">
-                    {vote.betAmount} $TUNE
-                  </p>
                   <p className="text-xs text-gray-500">
                     {new Date(vote.createdAt).toLocaleTimeString()}
                   </p>
@@ -102,15 +98,15 @@ export default function LiveBattleFeed() {
         <div className="mt-6 pt-4 border-t border-white/10">
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
-              <p className="text-xs text-gray-400 mb-1">Total Volume</p>
+              <p className="text-xs text-gray-400 mb-1">Total Votes</p>
               <p className="text-lg font-bold text-gradient">
-                {recentVotes.reduce((sum, v) => sum + v.betAmount, 0)} $TUNE
+                {recentVotes.length}
               </p>
             </div>
             <div>
-              <p className="text-xs text-gray-400 mb-1">Bettors</p>
+              <p className="text-xs text-gray-400 mb-1">Track A vs B</p>
               <p className="text-lg font-bold text-gradient">
-                {new Set(recentVotes.map((v) => v.userWallet)).size}
+                {recentVotes.filter(v => v.choice === "trackA").length} : {recentVotes.filter(v => v.choice !== "trackA").length}
               </p>
             </div>
           </div>

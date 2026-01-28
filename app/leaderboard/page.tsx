@@ -178,7 +178,7 @@ export default function LeaderboardPage() {
         {/* Footer */}
         <footer className="mt-12 text-center text-gray-500 text-sm">
           <p>Rankings updated in real-time · Based on ELO rating system</p>
-          <p className="mt-2">Powered by Solana · $TUNE on pump.fun · Built with AI</p>
+          <p className="mt-2">Built with AI · No wallet required · Free to play</p>
         </footer>
       </div>
     </main>

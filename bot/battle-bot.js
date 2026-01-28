@@ -168,8 +168,8 @@ async function runBattle() {
     currentBattle = {
       battleNumber,
       prompt,
-      trackA: { ...trackA, ...trackAData, bets: 0, bettors: 0 },
-      trackB: { ...trackB, ...trackBData, bets: 0, bettors: 0 },
+      trackA: { ...trackA, ...trackAData, votes: 0 },
+      trackB: { ...trackB, ...trackBData, votes: 0 },
       startTime: Date.now(),
       isRevealed: false,
     };
@@ -189,9 +189,9 @@ async function runBattle() {
         time,
       });
 
-      // Simulate some bets during countdown
+      // Simulate some votes during countdown
       if (time % 10 === 0 && time > 0) {
-        simulateBet();
+        simulateVote();
       }
 
       await sleep(1000);
@@ -244,38 +244,23 @@ async function runBattle() {
   }
 }
 
-// Simulate a bet (for demo purposes)
-function simulateBet() {
+// Simulate a vote (for demo purposes)
+function simulateVote() {
   if (!currentBattle || currentBattle.isRevealed) return;
 
-  const wallets = [
-    'ABC123...XYZ789',
-    'DEF456...UVW012',
-    'GHI789...RST345',
-    'JKL012...OPQ678',
-  ];
-
-  const wallet = wallets[Math.floor(Math.random() * wallets.length)];
-  const amount = Math.floor(Math.random() * 100) + 10;
   const track = Math.random() > 0.5 ? 'Track A' : 'Track B';
 
   if (track === 'Track A') {
-    currentBattle.trackA.bets += amount;
-    currentBattle.trackA.bettors++;
+    currentBattle.trackA.votes = (currentBattle.trackA.votes || 0) + 1;
   } else {
-    currentBattle.trackB.bets += amount;
-    currentBattle.trackB.bettors++;
+    currentBattle.trackB.votes = (currentBattle.trackB.votes || 0) + 1;
   }
 
   broadcast({
-    type: 'bet_placed',
-    wallet,
-    amount,
+    type: 'vote_placed',
     track,
-    totalA: currentBattle.trackA.bets,
-    totalB: currentBattle.trackB.bets,
-    bettorsA: currentBattle.trackA.bettors,
-    bettorsB: currentBattle.trackB.bettors,
+    totalA: currentBattle.trackA.votes || 0,
+    totalB: currentBattle.trackB.votes || 0,
   });
 }
 

@@ -1,25 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Music2, Trophy, Flame, TrendingUp, RefreshCw } from "lucide-react";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { Music2, Trophy, Flame, TrendingUp, RefreshCw, Check } from "lucide-react";
 import AudioPlayer from "./AudioPlayer";
-import BetButton from "./BetButton";
-import WalletConnect from "./WalletConnect";
+import VoteButton from "./BetButton";
 import PastBattles from "./PastBattles";
 import StatsFooter from "./StatsFooter";
+import LiveBattleFeed from "./LiveBattleFeed";
 import { loadTracks, selectBattleTracks, Track } from "@/lib/trackService";
-import { getBalance, subtractBalance, addBalance } from "@/lib/walletBalance";
-import { addBattleToHistory, BattleRecord } from "@/lib/battleHistory";
-import { incrementBattleCount, addActivePlayer, updatePrizePool } from "@/lib/stats";
+import { addBattleToHistory } from "@/lib/battleHistory";
+import { incrementBattleCount } from "@/lib/stats";
+import Link from "next/link";
 
 export default function BattleArena() {
-  const { publicKey, connected } = useWallet();
   const [countdown, setCountdown] = useState(60);
   const [isRevealed, setIsRevealed] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
-  const [betAmount, setBetAmount] = useState<number>(0);
-  const [betLocked, setBetLocked] = useState(false);
+  const [voteLocked, setVoteLocked] = useState(false);
   const [trackA, setTrackA] = useState<Track | null>(null);
   const [trackB, setTrackB] = useState<Track | null>(null);
   const [battleNumber, setBattleNumber] = useState(247);
@@ -28,14 +25,11 @@ export default function BattleArena() {
   const [countdownStarted, setCountdownStarted] = useState(false);
   const [eloChanges, setEloChanges] = useState<{ trackA: number; trackB: number } | null>(null);
   const [winner, setWinner] = useState<string | null>(null);
-  const [balanceChange, setBalanceChange] = useState<number>(0);
 
-  // Load tracks on mount
   useEffect(() => {
     loadBattle();
   }, []);
 
-  // Countdown timer - only starts after user plays a track
   useEffect(() => {
     if (!trackA || !trackB || !countdownStarted) return;
 
@@ -43,7 +37,6 @@ export default function BattleArena() {
       setCountdown((prev) => {
         if (prev <= 1) {
           setIsRevealed(true);
-          // Calculate ELO changes (simplified simulation)
           const winningTrack = Math.random() > 0.5 ? trackA.id : trackB.id;
           setWinner(winningTrack);
           setEloChanges({
@@ -51,21 +44,6 @@ export default function BattleArena() {
             trackB: winningTrack === trackB.id ? 15 : -10,
           });
 
-          // Calculate bet result if user placed a bet
-          if (betLocked && selectedTrack && publicKey && betAmount > 0) {
-            const userWon = selectedTrack === winningTrack;
-            if (userWon) {
-              // Win: original bet + 80% of opponent's bet (simulated as 0.8 * bet)
-              const winnings = betAmount + Math.floor(betAmount * 0.8);
-              addBalance(publicKey.toString(), winnings);
-              setBalanceChange(winnings);
-            } else {
-              // Loss: already deducted when bet was placed
-              setBalanceChange(-betAmount);
-            }
-          }
-
-          // Save battle to history
           const winnerModel = winningTrack === trackA.id ? trackA.ai_model : trackB.ai_model;
           const loserModel = winningTrack === trackA.id ? trackB.ai_model : trackA.ai_model;
           addBattleToHistory({
@@ -75,10 +53,7 @@ export default function BattleArena() {
             prompt: trackA.prompt,
           });
 
-          // Update global stats
           incrementBattleCount();
-
-          // Trigger custom event for PastBattles component
           window.dispatchEvent(new Event('battleHistoryUpdate'));
 
           return 0;
@@ -88,9 +63,8 @@ export default function BattleArena() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [trackA, trackB, countdownStarted, betLocked, selectedTrack, publicKey, betAmount]);
+  }, [trackA, trackB, countdownStarted]);
 
-  // Start countdown when user plays any track
   const handleTrackPlay = () => {
     if (!countdownStarted) {
       setCountdownStarted(true);
@@ -117,55 +91,18 @@ export default function BattleArena() {
     setCountdown(60);
     setIsRevealed(false);
     setSelectedTrack(null);
-    setBetAmount(0);
-    setBetLocked(false);
+    setVoteLocked(false);
     setBattleNumber((prev) => prev + 1);
     setCountdownStarted(false);
     setEloChanges(null);
     setWinner(null);
-    setBalanceChange(0);
     loadBattle();
   };
 
-  const handleBet = (trackId: string, amount: number) => {
-    // Check if wallet is connected
-    if (!connected || !publicKey) {
-      alert("⚠️ Please connect your wallet first!");
-      return;
-    }
-
-    // Check if bet is already locked
-    if (betLocked) {
-      alert("🔒 You've already placed your bet!");
-      return;
-    }
-
-    // Check balance
-    const currentBalance = getBalance(publicKey.toString());
-    if (currentBalance < amount) {
-      alert(`❌ Insufficient balance!\n\nYou need ${amount} $TUNE but only have ${currentBalance} $TUNE`);
-      return;
-    }
-
-    // Deduct bet amount from balance
-    const success = subtractBalance(publicKey.toString(), amount);
-    if (!success) {
-      alert("❌ Failed to place bet. Please try again.");
-      return;
-    }
-
-    // Lock in the bet
+  const handleVote = (trackId: string) => {
+    if (voteLocked) return;
     setSelectedTrack(trackId);
-    setBetAmount(amount);
-    setBetLocked(true);
-
-    // Add player to active players and update prize pool
-    addActivePlayer(publicKey.toString());
-    updatePrizePool(amount);
-
-    // Show confirmation
-    const trackName = trackId === trackA?.id ? "Track A" : "Track B";
-    alert(`✅ Bet placed!\n\nYou bet ${amount} $TUNE on ${trackName}\n\nNew balance: ${currentBalance - amount} $TUNE\n\nGood luck! 🎲`);
+    setVoteLocked(true);
   };
 
   if (isLoading) {
@@ -214,7 +151,13 @@ export default function BattleArena() {
             </p>
           </div>
         </div>
-        <WalletConnect />
+        <Link
+          href="/leaderboard"
+          className="bg-gradient-to-r from-accent to-primary hover:from-accent/80 hover:to-primary/80 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 hover:scale-105 glow-purple flex items-center gap-2"
+        >
+          <Trophy className="w-5 h-5" />
+          <span>Leaderboard</span>
+        </Link>
       </header>
 
       {/* Battle Info */}
@@ -286,25 +229,20 @@ export default function BattleArena() {
             onPlay={handleTrackPlay}
           />
 
-          <div className="mt-6 space-y-3">
-            <BetButton
-              trackId={trackA.id}
-              amount={10}
-              onBet={handleBet}
-              disabled={isRevealed || betLocked}
-            />
-            <BetButton
-              trackId={trackA.id}
-              amount={50}
-              onBet={handleBet}
-              disabled={isRevealed || betLocked}
-            />
-            <BetButton
-              trackId={trackA.id}
-              amount={100}
-              onBet={handleBet}
-              disabled={isRevealed || betLocked}
-            />
+          <div className="mt-6">
+            {voteLocked && selectedTrack === trackA.id ? (
+              <div className="w-full py-4 px-6 rounded-lg bg-primary/20 border border-primary flex items-center justify-center gap-2">
+                <Check className="w-6 h-6 text-primary" />
+                <span className="text-lg font-bold text-primary">Voted!</span>
+              </div>
+            ) : (
+              <VoteButton
+                trackId={trackA.id}
+                label="Track A"
+                onVote={handleVote}
+                disabled={isRevealed || voteLocked}
+              />
+            )}
           </div>
         </div>
 
@@ -345,51 +283,41 @@ export default function BattleArena() {
             onPlay={handleTrackPlay}
           />
 
-          <div className="mt-6 space-y-3">
-            <BetButton
-              trackId={trackB.id}
-              amount={10}
-              onBet={handleBet}
-              disabled={isRevealed || betLocked}
-              variant="secondary"
-            />
-            <BetButton
-              trackId={trackB.id}
-              amount={50}
-              onBet={handleBet}
-              disabled={isRevealed || betLocked}
-              variant="secondary"
-            />
-            <BetButton
-              trackId={trackB.id}
-              amount={100}
-              onBet={handleBet}
-              disabled={isRevealed || betLocked}
-              variant="secondary"
-            />
+          <div className="mt-6">
+            {voteLocked && selectedTrack === trackB.id ? (
+              <div className="w-full py-4 px-6 rounded-lg bg-secondary/20 border border-secondary flex items-center justify-center gap-2">
+                <Check className="w-6 h-6 text-secondary" />
+                <span className="text-lg font-bold text-secondary">Voted!</span>
+              </div>
+            ) : (
+              <VoteButton
+                trackId={trackB.id}
+                label="Track B"
+                onVote={handleVote}
+                disabled={isRevealed || voteLocked}
+                variant="secondary"
+              />
+            )}
           </div>
         </div>
       </div>
 
-      {/* Bet Result */}
-      {isRevealed && betLocked && balanceChange !== 0 && (
+      {/* Vote Result */}
+      {isRevealed && voteLocked && (
         <div className={`mb-6 md:mb-8 p-4 md:p-6 rounded-2xl border-2 text-center animate-fadeIn ${
-          balanceChange > 0
+          selectedTrack === winner
             ? "bg-green-900/20 border-green-500"
             : "bg-red-900/20 border-red-500"
         }`}>
           <h3 className={`text-2xl md:text-3xl font-black mb-2 ${
-            balanceChange > 0 ? "text-green-400" : "text-red-400"
+            selectedTrack === winner ? "text-green-400" : "text-red-400"
           }`}>
-            {balanceChange > 0 ? "🎉 YOU WON!" : "😔 YOU LOST"}
+            {selectedTrack === winner ? "Nice pick!" : "Better luck next time!"}
           </h3>
-          <p className="text-lg md:text-xl mb-2">
-            {balanceChange > 0 ? "+" : ""}{balanceChange} $TUNE
-          </p>
-          <p className="text-gray-400 text-xs md:text-sm">
-            {balanceChange > 0
-              ? `You won ${betAmount} $TUNE + ${Math.floor(betAmount * 0.8)} $TUNE bonus!`
-              : `Better luck next time! You lost ${betAmount} $TUNE`}
+          <p className="text-gray-400 text-sm">
+            {selectedTrack === winner
+              ? "You correctly predicted the winner!"
+              : "The other track won this round."}
           </p>
         </div>
       )}
@@ -407,6 +335,11 @@ export default function BattleArena() {
         </div>
       )}
 
+      {/* Live Feed */}
+      <div className="mb-8">
+        <LiveBattleFeed />
+      </div>
+
       {/* Stats Footer */}
       <StatsFooter />
 
@@ -415,7 +348,7 @@ export default function BattleArena() {
         <PastBattles
           onReplay={(battle) => {
             alert(
-              `🔄 Replay Feature Coming Soon!\n\nBattle #${battle.id}\n${battle.winner} vs ${battle.loser}\n\nPrompt: ${battle.prompt}`
+              `Battle #${battle.id}\n${battle.winner} vs ${battle.loser}\n\nPrompt: ${battle.prompt}`
             );
           }}
         />
@@ -423,7 +356,7 @@ export default function BattleArena() {
 
       {/* Footer */}
       <footer className="mt-12 text-center text-gray-500 text-sm">
-        <p>Powered by Solana · $TUNE on pump.fun · Built with AI</p>
+        <p>Built with AI · No wallet required · Free to play</p>
       </footer>
     </div>
   );

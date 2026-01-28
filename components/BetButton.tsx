@@ -1,27 +1,27 @@
 "use client";
 
-import { Coins, Zap } from "lucide-react";
+import { Music2, Zap } from "lucide-react";
 
-interface BetButtonProps {
+interface VoteButtonProps {
   trackId: string;
-  amount: number;
-  onBet: (trackId: string, amount: number) => void;
+  label: string;
+  onVote: (trackId: string) => void;
   disabled?: boolean;
   variant?: "primary" | "secondary";
 }
 
-export default function BetButton({
+export default function VoteButton({
   trackId,
-  amount,
-  onBet,
+  label,
+  onVote,
   disabled = false,
   variant = "primary",
-}: BetButtonProps) {
+}: VoteButtonProps) {
   const isPrimary = variant === "primary";
 
   return (
     <button
-      onClick={() => onBet(trackId, amount)}
+      onClick={() => onVote(trackId)}
       disabled={disabled}
       className={`
         w-full py-4 md:py-3 px-6 rounded-lg font-bold text-base md:text-lg
@@ -38,10 +38,8 @@ export default function BetButton({
         ${!disabled && "hover:shadow-2xl"}
       `}
     >
-      <Coins className="w-5 h-5 md:w-6 md:h-6" />
-      <span>
-        BET {amount} <span className="text-xs md:text-sm opacity-80">$TUNE</span>
-      </span>
+      <Music2 className="w-5 h-5 md:w-6 md:h-6" />
+      <span>Vote {label}</span>
       {!disabled && <Zap className="w-4 h-4 md:w-5 md:h-5 animate-pulse" />}
     </button>
   );
