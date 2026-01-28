@@ -6,7 +6,6 @@ import AudioPlayer from "./AudioPlayer";
 import VoteButton from "./BetButton";
 import PastBattles from "./PastBattles";
 import StatsFooter from "./StatsFooter";
-import LiveBattleFeed from "./LiveBattleFeed";
 import { loadTracks, selectBattleTracks, Track } from "@/lib/trackService";
 import { addBattleToHistory } from "@/lib/battleHistory";
 import { incrementBattleCount } from "@/lib/stats";
@@ -334,11 +333,6 @@ export default function BattleArena() {
           </button>
         </div>
       )}
-
-      {/* Live Feed */}
-      <div className="mb-8">
-        <LiveBattleFeed />
-      </div>
 
       {/* Stats Footer */}
       <StatsFooter />

@@ -77,19 +77,3 @@
   background: linear-gradient(180deg, #00D9FF, #FF6B35);
 }
 
-/* Wallet Adapter Overrides */
-.wallet-adapter-button {
-  @apply bg-gradient-to-r from-primary to-accent text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 hover:scale-105 hover:glow-orange;
-}
-
-.wallet-adapter-button-trigger {
-  @apply bg-gradient-to-r from-primary to-accent;
-}
-
-.wallet-adapter-modal-wrapper {
-  @apply bg-black/90 backdrop-blur-sm;
-}
-
-.wallet-adapter-modal {
-  @apply bg-zinc-900 border border-primary/30 rounded-xl;
-}
